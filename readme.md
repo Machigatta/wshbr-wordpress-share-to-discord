@@ -1,4 +1,4 @@
-![wshbr-logo](/img/logo.png?raw=true "wshbr-logo")
+![wshbr-logo](/assets/img/logo.png?raw=true "wshbr-logo")
 
 A simple wordpress plugin to share your posts with your discord-servers.
 
