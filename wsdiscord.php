@@ -5,8 +5,8 @@ Plugin URI: https://github.com/Machigatta/wshbr-wordpress-share-to-discord
 Description: Share your posts to discord hooks!
 Author: Machigatta
 Author URI: https://machigatta.com/
-Version: 1.0
-Stable Tag: 1.0
+Version: 1.1
+Stable Tag: 1.1
  */
 class wsdiscrod
 {
@@ -111,7 +111,13 @@ class wsdiscrod
     {
         $ret = "";
         if(is_user_logged_in() && current_user_can('edit_posts')){
-            $ret .= '<article><div id="sidebar_post_buttons"><button type="submit" class="btn btn-default" name="dc_share" onClick="shareDiscord();" disabled><i class="fa fa-share-alt"></i> Discord-Share</button></form></div>';
+            $ret .= '<article><script>var postData = {
+                title: "'.addslashes($post_object["title"]).'",
+                url: "'.esc_url($post_object["url"]).'",
+                short: "'.addslashes($post_object["short"]).'",
+                thumbnailurl: "'.$post_object["img"].'"
+            }</script>';
+            $ret .= '<div id="sidebar_post_buttons"><button type="submit" class="btn btn-default" name="dc_share" onClick="shareDiscord();" disabled><i class="fa fa-share-alt"></i> Discord-Share</button></form></div>';
             $ret .= '<script> var wshbr_hookurls = '.json_encode(explode("\r\n",get_option('wsdiscrod_settings')["webhooks"])).';</script></article>';
         }
         return $ret;
@@ -124,6 +130,7 @@ class wsdiscrod
         $title = strip_tags(get_the_title($post_id));
         $tagObjects = get_the_tags($post_id);
         $single = is_single();
+        $the_excerpt = substr(str_replace("\n","",wp_strip_all_tags(wp_filter_nohtml_kses(strip_tags(strip_shortcodes(get_the_content($post_id)))))), 0, 300);
         $tags = "";
         if (!empty($tagObjects)) {
             $tags .= $tagObjects[0]->name;
@@ -153,6 +160,7 @@ class wsdiscrod
             'date' => $date,
             'author' => $author,
             'single' => $single,
+            'short' => $the_excerpt,
             'img' => get_the_post_thumbnail_url($post_id),
         );
         return $post_object;
